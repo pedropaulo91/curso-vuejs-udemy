@@ -2,16 +2,20 @@
     <div class="box-login">
         <div class="logo">
             <h1>Login</h1>
+            Email:{{ usuario.email }}
+            Senha:{{ usuario.senha }}
         </div>
         <Input
         label="E-mail"
         placeHolder="exemplo@gmail.com"
+        v-model="usuario.email"
         >
         </Input>
         <Input
         label="Senha"
         placeHolder="123456"
         type="password"
+        v-model="usuario.senha"
         >
         </Input>
 
@@ -33,6 +37,14 @@ export default {
     components: {
         Input,
         Button
+    },
+    data() {
+        return {
+            usuario: {
+                email:'',
+                senha:''
+            }
+        }
     },
     methods:{
         login(){
