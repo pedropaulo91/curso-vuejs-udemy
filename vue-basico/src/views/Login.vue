@@ -2,8 +2,6 @@
     <div class="box-login">
         <div class="logo">
             <h1>Login</h1>
-            Email:{{ usuario.email }}
-            Senha:{{ usuario.senha }}
         </div>
         <Input
         label="E-mail"
@@ -31,6 +29,9 @@
 <script>
 import Input from "@/components/input/Input.vue";
 import Button from "@/components/button/Button.vue";
+import Usuario from '@/models/Usuario';
+import usuarioService from '@/services/usuario-service';
+import utilsStorage from '@/utils/storage';
 
 export default {
     name: "Login",
@@ -40,15 +41,35 @@ export default {
     },
     data() {
         return {
-            usuario: {
-                email:'',
-                senha:''
-            }
+            usuario: new Usuario()
         }
     },
     methods:{
         login(){
-            this.$router.push({name: 'Dashboard'})
+
+            if(!this.usuario.modeloValidoLogin()){
+                this.$swal({
+                icon: 'warning',
+                title: 'E-mail e senha são obrigatórios',
+                confirmButtonColor: '#FF3D00',
+                animate: true
+                })
+                return;
+            }
+
+            usuarioService
+            .login(this.usuario.email, this.usuario.senha)
+            .then(response => {
+                this.usuario = new Usuario(response.data.usuario);
+
+                utilsStorage.salvarUsuarioNaStorage(this.usuario);
+                utilsStorage.salvarTokenNaStorage(response.data.token);
+
+                this.$router.push({name: "ControleDeProdutos"})
+            })
+            .catch(error => {
+                console.log(error);
+            });
         }
     }
 }
